@@ -78,9 +78,18 @@ Resources:
           curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" \
           -o /usr/local/bin/docker-compose
           chmod +x /usr/local/bin/docker-compose
+          docker swarm init
+          docker service create \
+          --name=viz \
+          --publish=8080:8080/tcp \
+          --constraint=node.role==manager \
+          --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock \
+          dockersamples/visualizer
 
   DockerWorker1:
     Type: AWS::EC2::Instance
+    DependsOn:
+      - DockerManager1
     Properties:
       ImageId: ami-038b5c5d2ad6a5090
       InstanceType: t2.micro
@@ -104,6 +113,9 @@ Resources:
           curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" \
           -o /usr/local/bin/docker-compose
           chmod +x /usr/local/bin/docker-compose
+          yum install -y python-pip
+          pip install ec2instanceconnectcli
+          $(mssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r ${AWS::Region} ${DockerManager1} docker swarm join-token worker | grep docker)
 Outputs:
  DockerManagerDNSName:
     Description: Docker Manager DNS Name
