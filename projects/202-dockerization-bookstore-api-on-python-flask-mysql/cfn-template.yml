@@ -1,10 +1,13 @@
 AWSTemplateFormatVersion: 2010-09-09
+
 Description: Cloudformation template for project 202
+  
 Parameters:
   KeyPairName:
     Description: Enter the name of your Key Pair for SSH Connection.
     Type: AWS::EC2::KeyPair::KeyName
     ConstraintDescription: Must be one of the existing KepPairs 
+  
 Resources:
   WebServerSecurityGroup:
     Type: "AWS::EC2::SecurityGroup"
@@ -42,7 +45,7 @@ Resources:
           curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" \
           -o /usr/local/bin/docker-compose
           chmod +x /usr/local/bin/docker-compose
-          TOKEN="xxxxxxxxxxx"
+          TOKEN="2bf83eda6abe858c76a746ed999d5a52dbcf5466"
           FOLDER="https://$TOKEN@raw.githubusercontent.com/clarusway/clarusway-aws-devops-1-20/master/devops/projects/202-dockerization-bookstore-api-on-python-flask-mysql/"
           curl -s --create-dirs -o "/home/ec2-user/bookstore-api/bookstore-api.py" -L "$FOLDER"bookstore-api.py
           curl -s --create-dirs -o "/home/ec2-user/bookstore-api/requirements.txt" -L "$FOLDER"requirements.txt
@@ -51,6 +54,7 @@ Resources:
           cd /home/ec2-user/bookstore-api
           docker build -t callahanclarus/bookstore-api:latest .
           docker-compose up -d
+
 Outputs:
   WebsiteURL:
     Description: Bookstore Web API URL
